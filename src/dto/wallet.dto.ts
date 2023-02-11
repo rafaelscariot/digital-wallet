@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Decimal } from '@prisma/client/runtime';
-import { IsDecimal, IsNumber } from 'class-validator';
+import { IsDate, IsDecimal, IsNumber } from 'class-validator';
 
 export class GetWalletBalanceByWalletIdDTO {
   @IsNumber()
@@ -16,4 +16,22 @@ export class CreateWalletDTO {
   @IsDecimal()
   @ApiProperty({ type: Number })
   amount: Decimal;
+}
+
+export class GetWalletStatementByWalletIdDTO {
+  @IsNumber()
+  @ApiProperty()
+  id: number;
+
+  @IsDecimal()
+  @ApiProperty({ type: Number })
+  withdrawal?: Decimal;
+
+  @IsDecimal()
+  @ApiProperty({ type: Number })
+  deposit?: Decimal;
+
+  @IsDate()
+  @ApiProperty()
+  createdAt: Date;
 }

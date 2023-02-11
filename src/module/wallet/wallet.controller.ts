@@ -3,9 +3,11 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   CreateWalletDTO,
   GetWalletBalanceByWalletIdDTO,
+  GetWalletStatementByWalletIdDTO,
 } from '@dto/wallet.dto';
 import { GetWalletBalanceByWalletIdService } from './services/getWalletBalanceByWalletId.service';
 import { CreateWalletService } from './services/createWallet.service';
+import { GetWalletStatementByWalletIdService } from './services/getWalletStatementByWalletId.service';
 
 @ApiTags('wallet')
 @Controller('wallet')
@@ -13,9 +15,10 @@ export class WalletController {
   constructor(
     private readonly getWalletBalanceByWalletIdService: GetWalletBalanceByWalletIdService,
     private readonly createWalletService: CreateWalletService,
+    private readonly getWalletStatementByWalletIdService: GetWalletStatementByWalletIdService,
   ) {}
 
-  @Get(':walletId')
+  @Get(':walletId/balance')
   @ApiOperation({ summary: 'Get wallet balance by wallet id' })
   @ApiResponse({
     status: 200,
@@ -29,10 +32,27 @@ export class WalletController {
     return this.getWalletBalanceByWalletIdService.perform(Number(walletId));
   }
 
+  @Get(':walletId/statement')
+  @ApiOperation({ summary: 'Get wallet statement by wallet id' })
+  @ApiResponse({
+    status: 200,
+    description: 'Wallet exists and the statement has been returned',
+    type: [GetWalletStatementByWalletIdDTO],
+  })
+  @ApiResponse({
+    status: 404,
+    description: "Wallet not found or wallet doesn't have statements",
+  })
+  async getWalletStatementByWalletId(
+    @Param('walletId') walletId: number,
+  ): Promise<GetWalletStatementByWalletIdDTO[]> {
+    return this.getWalletStatementByWalletIdService.perform(Number(walletId));
+  }
+
   @Post()
   @ApiOperation({ summary: 'Create a wallet' })
   @ApiResponse({
-    status: 200,
+    status: 201,
     description: 'Wallet created',
     type: CreateWalletDTO,
   })
