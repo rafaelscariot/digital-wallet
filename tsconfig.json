@@ -11,7 +11,7 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "paths": {
-      "@wallet/*": ["src/wallet/*"],
+      "@wallet/*": ["src/module/wallet/*"],
       "@shared/*": ["src/shared/*"],
       "@dto/*": ["src/dto/*"],
       "@error/*": ["src/error/*"]
