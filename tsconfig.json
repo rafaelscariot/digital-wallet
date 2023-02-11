@@ -10,6 +10,12 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
+    "paths": {
+      "@wallet/*": ["src/wallet/*"],
+      "@shared/*": ["src/shared/*"],
+      "@dto/*": ["src/dto/*"],
+      "@error/*": ["src/error/*"]
+    },
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": false,
