@@ -9,7 +9,7 @@ datasource db {
 
 model Wallet {
   id                     Int                      @id @default(autoincrement())
-  amount                 Decimal                  @default(5.00) @db.Decimal(2, 2)
+  amount                 Decimal                  @db.Money()
   createdAt              DateTime                 @default(now())
   walletStatement        WalletStatement[]
   Purchase               Purchase[]
@@ -18,8 +18,8 @@ model Wallet {
 
 model WalletStatement {
   id         Int      @id @default(autoincrement())
-  withdrawal Decimal? @db.Decimal(2, 2)
-  deposit    Decimal? @db.Decimal(2, 2)
+  withdrawal Decimal? @db.Money()
+  deposit    Decimal? @db.Money()
   createdAt  DateTime @default(now())
   wallet     Wallet   @relation(fields: [walletId], references: [id])
   walletId   Int
@@ -27,7 +27,7 @@ model WalletStatement {
 
 model Purchase {
   id                     Int                      @id @default(autoincrement())
-  amount                 Decimal                  @db.Decimal(2, 2)
+  amount                 Decimal                  @db.Money()
   createdAt              DateTime                 @default(now())
   PaymentReversalHistory PaymentReversalHistory[]
   wallet                 Wallet                   @relation(fields: [walletId], references: [id])
@@ -36,7 +36,7 @@ model Purchase {
 
 model PaymentReversalHistory {
   id         Int      @id @default(autoincrement())
-  amount     Decimal  @db.Decimal(2, 2)
+  amount     Decimal  @db.Money()
   purchase   Purchase @relation(fields: [purchaseId], references: [id])
   purchaseId Int
   createdAt  DateTime @default(now())
