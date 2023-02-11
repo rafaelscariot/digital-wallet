@@ -4,10 +4,12 @@ import {
   CreateWalletDTO,
   GetWalletBalanceByWalletIdDTO,
   GetWalletStatementByWalletIdDTO,
-} from '@dto/wallet.dto';
-import { GetWalletBalanceByWalletIdService } from './services/getWalletBalanceByWalletId.service';
-import { CreateWalletService } from './services/createWallet.service';
-import { GetWalletStatementByWalletIdService } from './services/getWalletStatementByWalletId.service';
+} from '@dto/index';
+import {
+  GetWalletBalanceByWalletIdService,
+  CreateWalletService,
+  GetWalletStatementByWalletIdService,
+} from './services';
 
 @ApiTags('wallet')
 @Controller('wallet')
@@ -17,6 +19,18 @@ export class WalletController {
     private readonly createWalletService: CreateWalletService,
     private readonly getWalletStatementByWalletIdService: GetWalletStatementByWalletIdService,
   ) {}
+
+  @Post()
+  @ApiOperation({ summary: 'Create a wallet' })
+  @ApiResponse({
+    status: 201,
+    description: 'Wallet created',
+    type: CreateWalletDTO,
+  })
+  async createWallet(@Body() data: CreateWalletDTO): Promise<CreateWalletDTO> {
+    const { amount } = data;
+    return this.createWalletService.perform({ amount });
+  }
 
   @Get(':walletId/balance')
   @ApiOperation({ summary: 'Get wallet balance by wallet id' })
@@ -37,7 +51,7 @@ export class WalletController {
   @ApiResponse({
     status: 200,
     description: 'Wallet exists and the statement has been returned',
-    type: [GetWalletStatementByWalletIdDTO],
+    type: GetWalletStatementByWalletIdDTO,
   })
   @ApiResponse({
     status: 404,
@@ -45,19 +59,7 @@ export class WalletController {
   })
   async getWalletStatementByWalletId(
     @Param('walletId') walletId: number,
-  ): Promise<GetWalletStatementByWalletIdDTO[]> {
+  ): Promise<GetWalletStatementByWalletIdDTO> {
     return this.getWalletStatementByWalletIdService.perform(Number(walletId));
-  }
-
-  @Post()
-  @ApiOperation({ summary: 'Create a wallet' })
-  @ApiResponse({
-    status: 201,
-    description: 'Wallet created',
-    type: CreateWalletDTO,
-  })
-  async createWallet(@Body() data: CreateWalletDTO): Promise<CreateWalletDTO> {
-    const { amount } = data;
-    return this.createWalletService.perform({ amount });
   }
 }
