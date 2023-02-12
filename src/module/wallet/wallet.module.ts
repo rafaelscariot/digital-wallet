@@ -6,6 +6,9 @@ import {
   CreateWalletService,
   GetWalletStatementByWalletIdService,
 } from './service';
+import { KafkaTopicListener } from './listener';
+import { KafkaConsumerService, KafkaProducerService } from '@kafka/service';
+import { MakeDepositService } from './service/make-deposit.service';
 
 @Module({
   controllers: [WalletController],
@@ -14,6 +17,10 @@ import {
     GetWalletBalanceByWalletIdService,
     CreateWalletService,
     GetWalletStatementByWalletIdService,
+    KafkaTopicListener,
+    KafkaConsumerService,
+    KafkaProducerService,
+    MakeDepositService,
   ],
 })
 export class WalletModule {}

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Decimal } from '@prisma/client/runtime';
+import { Decimal } from '@prisma/client/runtime/library';
 import { IsArray, IsDate, IsDecimal } from 'class-validator';
 
 export class GetWalletBalanceByWalletIdDTO {

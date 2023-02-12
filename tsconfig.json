@@ -12,7 +12,9 @@
     "baseUrl": "./",
     "paths": {
       "@wallet/*": ["src/module/wallet/*"],
-      "@db/*": ["src/module/db/*"]
+      "@db/*": ["src/module/db/*"],
+      "@kafka/*": ["src/module/kafka/*"],
+      "@shared/*": ["src/shared/*"]
     },
     "incremental": true,
     "skipLibCheck": true,
