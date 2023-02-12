@@ -7,9 +7,7 @@ import {
 } from 'kafkajs';
 
 @Injectable()
-export class ConsumerService implements OnApplicationShutdown {
-  constructor() {}
-
+export class KafkaConsumerService implements OnApplicationShutdown {
   private readonly kafka = new Kafka({
     brokers: ['localhost:9092'],
   });
