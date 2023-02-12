@@ -1,7 +1,7 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { KafkaConsumerService, KafkaProducerService } from '@kafka/service';
 import { TopicEnum } from '@shared/enum';
-import { MakeDepositService } from '@wallet/service/make-deposit.service';
+import { DepositService } from '@wallet/service';
 import { isPayloadValid } from '@shared/util';
 import { WalletError } from '@wallet/error';
 
@@ -9,9 +9,11 @@ import { WalletError } from '@wallet/error';
 export class KafkaTopicListener implements OnModuleInit {
   constructor(
     private readonly kafkaConsumerService: KafkaConsumerService,
-    private readonly makeDepositService: MakeDepositService,
+    private readonly depositService: DepositService,
     private readonly kafkaProducerService: KafkaProducerService,
   ) {}
+
+  private readonly logger = new Logger(KafkaTopicListener.name);
 
   async onModuleInit() {
     await this.kafkaConsumerService.consume(
@@ -31,7 +33,7 @@ export class KafkaTopicListener implements OnModuleInit {
           if (isPayloadValid(payload)) {
             switch (topic.toString()) {
               case TopicEnum.DEPOSIT:
-                await this.makeDepositService.perform(payload);
+                await this.depositService.perform(payload);
                 break;
               case TopicEnum.WITHDRAWAL:
                 console.log('saque');
@@ -47,6 +49,10 @@ export class KafkaTopicListener implements OnModuleInit {
                 break;
             }
           } else {
+            this.logger.error(
+              `Invalid payload from Kafka topic ${topic.toString()}`,
+            );
+
             await this.kafkaProducerService.produce({
               topic: 'error',
               messages: [

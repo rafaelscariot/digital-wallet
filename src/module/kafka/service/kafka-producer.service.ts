@@ -1,4 +1,4 @@
-import { OnModuleInit } from '@nestjs/common';
+import { Logger, OnModuleInit } from '@nestjs/common';
 import { Injectable, OnApplicationShutdown } from '@nestjs/common';
 import { Kafka, Producer, ProducerRecord } from 'kafkajs';
 
@@ -7,8 +7,10 @@ export class KafkaProducerService
   implements OnApplicationShutdown, OnModuleInit
 {
   private readonly kafka = new Kafka({
-    brokers: ['localhost:9092'],
+    brokers: [process.env.KAFKA_URL],
   });
+
+  private readonly logger = new Logger(KafkaProducerService.name);
 
   private readonly producer: Producer = this.kafka.producer();
 
@@ -17,6 +19,8 @@ export class KafkaProducerService
   }
 
   async produce(record: ProducerRecord) {
+    this.logger.log(`Producing record in topic ${record.topic}`);
+
     await this.producer.send(record);
   }
 
