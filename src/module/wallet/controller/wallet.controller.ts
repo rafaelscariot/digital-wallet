@@ -4,7 +4,7 @@ import {
   CreateWalletDTO,
   GetWalletBalanceByWalletIdDTO,
   GetWalletStatementByWalletIdDTO,
-} from '@dto/index';
+} from '@wallet/dto';
 import {
   GetWalletBalanceByWalletIdService,
   CreateWalletService,

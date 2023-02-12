@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { PrismaService } from '@shared/index';
+import { PrismaService } from '@db/service';
 import { WalletController } from './controller';
 import {
   GetWalletBalanceByWalletIdService,
@@ -8,7 +8,6 @@ import {
 } from './service';
 
 @Module({
-  imports: [],
   controllers: [WalletController],
   providers: [
     PrismaService,

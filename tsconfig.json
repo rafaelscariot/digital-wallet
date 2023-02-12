@@ -12,9 +12,7 @@
     "baseUrl": "./",
     "paths": {
       "@wallet/*": ["src/module/wallet/*"],
-      "@shared/*": ["src/shared/*"],
-      "@dto/*": ["src/dto/*"],
-      "@error/*": ["src/error/*"]
+      "@db/*": ["src/module/db/*"]
     },
     "incremental": true,
     "skipLibCheck": true,

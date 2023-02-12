@@ -1,7 +1,7 @@
-import { GetWalletBalanceByWalletIdDTO } from '@dto/index';
-import { WalletError } from '@error/index';
+import { GetWalletBalanceByWalletIdDTO } from '@wallet/dto';
+import { WalletError } from '@wallet/error';
 import { Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from '@shared/index';
+import { PrismaService } from '@db/service';
 
 @Injectable()
 export class GetWalletBalanceByWalletIdService {
