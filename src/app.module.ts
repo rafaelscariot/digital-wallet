@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { WalletModule } from '@wallet/index';
+import { WalletModule } from '@wallet/wallet.module';
 
 @Module({
   imports: [WalletModule],

@@ -9,7 +9,7 @@ import {
   GetWalletBalanceByWalletIdService,
   CreateWalletService,
   GetWalletStatementByWalletIdService,
-} from './services';
+} from '@wallet/service';
 
 @ApiTags('wallet')
 @Controller('wallet')

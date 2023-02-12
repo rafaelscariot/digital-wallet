@@ -1,18 +1,24 @@
 import { GetWalletStatementByWalletIdDTO } from '@dto/index';
 import { WalletError } from '@error/index';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '@shared/index';
 
 @Injectable()
 export class GetWalletStatementByWalletIdService {
   constructor(private readonly prismaService: PrismaService) {}
 
+  private readonly logger = new Logger(
+    GetWalletStatementByWalletIdService.name,
+  );
+
   async perform(walletId: number): Promise<GetWalletStatementByWalletIdDTO> {
-    const wallet = await this.prismaService.wallet.findUnique({
+    this.logger.log(`Getting wallet statements for the wallet ${walletId}`);
+
+    const { amount } = await this.prismaService.wallet.findUnique({
       where: { id: walletId },
     });
 
-    if (!wallet) {
+    if (!amount) {
       throw WalletError.NOT_FOUND(`wallet_${walletId}`);
     }
 
@@ -21,6 +27,6 @@ export class GetWalletStatementByWalletIdService {
       orderBy: { createdAt: 'asc' },
     });
 
-    return { amount: wallet.amount, movements: walletStatements };
+    return { amount, movements: walletStatements };
   }
 }
