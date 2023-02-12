@@ -1,4 +1,4 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 
 export class WalletError {
   static NOT_FOUND(prop: string): NotFoundException {

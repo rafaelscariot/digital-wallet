@@ -1,6 +1,6 @@
-import { CreateWalletDTO } from '@dto/index';
+import { CreateWalletDTO } from '@wallet/dto';
 import { Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from '@shared/index';
+import { PrismaService } from '@db/service';
 
 @Injectable()
 export class CreateWalletService {
