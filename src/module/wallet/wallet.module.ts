@@ -8,7 +8,7 @@ import {
 } from './service';
 import { KafkaTopicListener } from './listener';
 import { KafkaConsumerService, KafkaProducerService } from '@kafka/service';
-import { MakeDepositService } from './service/make-deposit.service';
+import { DepositService } from './service';
 
 @Module({
   controllers: [WalletController],
@@ -20,7 +20,7 @@ import { MakeDepositService } from './service/make-deposit.service';
     KafkaTopicListener,
     KafkaConsumerService,
     KafkaProducerService,
-    MakeDepositService,
+    DepositService,
   ],
 })
 export class WalletModule {}
