@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { PrismaService } from '@shared/index';
-import { WalletController } from './index';
+import { WalletController } from './controller';
 import {
   GetWalletBalanceByWalletIdService,
   CreateWalletService,
   GetWalletStatementByWalletIdService,
-} from './services';
+} from './service';
 
 @Module({
   imports: [],
