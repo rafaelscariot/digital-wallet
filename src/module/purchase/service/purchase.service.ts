@@ -4,19 +4,19 @@ import { KafkaProducerService } from '@kafka/service';
 import { TopicEnum } from '@shared/enum';
 
 @Injectable()
-export class DepositService {
+export class PurchaseService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly kafkaProducerService: KafkaProducerService,
   ) {}
 
-  private readonly logger = new Logger(DepositService.name);
+  private readonly logger = new Logger(PurchaseService.name);
 
   async perform(payload: string): Promise<void> {
     try {
       const { walletId, amount } = await this.parsePayload(payload);
 
-      this.logger.log(`Depositing amount ${amount} in the wallet ${walletId}`);
+      this.logger.log(`Purchase of ${amount} in the wallet ${walletId}`);
 
       const wallet = await this.prismaService.wallet.findUnique({
         where: { id: walletId },
@@ -26,16 +26,28 @@ export class DepositService {
         throw Error(`Wallet ${walletId} not found`);
       }
 
+      if (amount > Number(wallet.amount)) {
+        throw Error('Invalid amount');
+      }
+
       const updateWallet = this.prismaService.wallet.update({
-        data: { amount: Number(wallet.amount) + amount },
+        data: { amount: Number(wallet.amount) - amount },
         where: { id: walletId },
       });
 
-      const createWalletStatement = this.prismaService.walletStatement.create({
-        data: { walletId, deposit: amount },
+      const createPurchase = this.prismaService.purchase.create({
+        data: { walletId, amount },
       });
 
-      await this.prismaService.$transaction([updateWallet, createWalletStatement]);
+      const createWalletStatement = this.prismaService.walletStatement.create({
+        data: { walletId, withdrawal: amount },
+      });
+
+      await this.prismaService.$transaction([
+        updateWallet,
+        createPurchase,
+        createWalletStatement,
+      ]);
     } catch (error) {
       this.logger.error(error);
 

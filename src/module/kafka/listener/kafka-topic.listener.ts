@@ -1,16 +1,20 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { KafkaConsumerService, KafkaProducerService } from '@kafka/service';
 import { TopicEnum } from '@shared/enum';
-import { DepositService } from '@wallet/service';
+import { DepositService, WithdrawalService } from '@wallet/service';
 import { isPayloadValid } from '@shared/util';
 import { WalletError } from '@wallet/error';
+import { PurchaseService, CancelPurchaseService } from '@purchase/service';
 
 @Injectable()
 export class KafkaTopicListener implements OnModuleInit {
   constructor(
     private readonly kafkaConsumerService: KafkaConsumerService,
-    private readonly depositService: DepositService,
     private readonly kafkaProducerService: KafkaProducerService,
+    private readonly depositService: DepositService,
+    private readonly withdrawalService: WithdrawalService,
+    private readonly purchaseService: PurchaseService,
+    private readonly cancelPurchaseService: CancelPurchaseService,
   ) {}
 
   private readonly logger = new Logger(KafkaTopicListener.name);
@@ -23,7 +27,6 @@ export class KafkaTopicListener implements OnModuleInit {
           TopicEnum.WITHDRAWAL,
           TopicEnum.PURCHASE,
           TopicEnum.CANCELLATION,
-          TopicEnum.REVERSAL,
         ],
       },
       {
@@ -36,16 +39,13 @@ export class KafkaTopicListener implements OnModuleInit {
                 await this.depositService.perform(payload);
                 break;
               case TopicEnum.WITHDRAWAL:
-                console.log('saque');
+                await this.withdrawalService.perform(payload);
                 break;
               case TopicEnum.PURCHASE:
-                console.log('compra');
+                await this.purchaseService.perform(payload);
                 break;
               case TopicEnum.CANCELLATION:
-                console.log('cancelamento');
-                break;
-              case TopicEnum.REVERSAL:
-                console.log('estorno');
+                await this.cancelPurchaseService.perform(payload);
                 break;
             }
           } else {

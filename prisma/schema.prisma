@@ -8,38 +8,28 @@ datasource db {
 }
 
 model Wallet {
-  id                     Int                      @id @default(autoincrement())
-  amount                 Decimal                  @db.Money()
-  createdAt              DateTime                 @default(now()) @map("created_at")
-  walletStatement        WalletStatement[]
-  Purchase               Purchase[]
-  PaymentReversalHistory PaymentReversalHistory[]
+  id              Int               @id @default(autoincrement())
+  amount          Decimal           @db.Money()
+  createdAt       DateTime          @default(now()) @map("created_at")
+  walletStatement WalletStatement[]
+  Purchase        Purchase[]
 }
 
 model WalletStatement {
   id         Int      @id @default(autoincrement())
   withdrawal Decimal? @db.Money()
   deposit    Decimal? @db.Money()
+  reversal   Decimal? @db.Money()
   createdAt  DateTime @default(now()) @map("created_at")
   wallet     Wallet   @relation(fields: [walletId], references: [id])
   walletId   Int      @map("wallet_id")
 }
 
 model Purchase {
-  id                     Int                      @id @default(autoincrement())
-  amount                 Decimal                  @db.Money()
-  createdAt              DateTime                 @default(now()) @map("created_at")
-  PaymentReversalHistory PaymentReversalHistory[]
-  wallet                 Wallet                   @relation(fields: [walletId], references: [id])
-  walletId               Int                      @map("wallet_id")
-}
-
-model PaymentReversalHistory {
-  id         Int      @id @default(autoincrement())
-  amount     Decimal  @db.Money()
-  purchase   Purchase @relation(fields: [purchaseId], references: [id])
-  purchaseId Int      @map("purchase_id")
-  createdAt  DateTime @default(now()) @map("created_at")
-  wallet     Wallet   @relation(fields: [walletId], references: [id])
-  walletId   Int      @map("wallet_id")
+  id        Int      @id @default(autoincrement())
+  amount    Decimal  @db.Money()
+  canceled  Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+  wallet    Wallet   @relation(fields: [walletId], references: [id])
+  walletId  Int      @map("wallet_id")
 }
