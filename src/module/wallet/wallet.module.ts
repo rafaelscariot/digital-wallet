@@ -5,10 +5,11 @@ import {
   GetWalletBalanceByWalletIdService,
   CreateWalletService,
   GetWalletStatementByWalletIdService,
+  WithdrawalService,
+  DepositService,
 } from './service';
-import { KafkaTopicListener } from './listener';
 import { KafkaConsumerService, KafkaProducerService } from '@kafka/service';
-import { DepositService } from './service';
+import { CancelPurchaseService, PurchaseService } from '@purchase/service';
 
 @Module({
   controllers: [WalletController],
@@ -17,10 +18,12 @@ import { DepositService } from './service';
     GetWalletBalanceByWalletIdService,
     CreateWalletService,
     GetWalletStatementByWalletIdService,
-    KafkaTopicListener,
     KafkaConsumerService,
     KafkaProducerService,
     DepositService,
+    WithdrawalService,
+    PurchaseService,
+    CancelPurchaseService,
   ],
 })
 export class WalletModule {}

@@ -14,6 +14,7 @@
       "@wallet/*": ["src/module/wallet/*"],
       "@db/*": ["src/module/db/*"],
       "@kafka/*": ["src/module/kafka/*"],
+      "@purchase/*": ["src/module/purchase/*"],
       "@shared/*": ["src/shared/*"]
     },
     "incremental": true,
