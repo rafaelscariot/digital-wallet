@@ -3,14 +3,12 @@ import { Injectable, OnApplicationShutdown } from '@nestjs/common';
 import { Kafka, Producer, ProducerRecord } from 'kafkajs';
 
 @Injectable()
-export class KafkaProducerService
-  implements OnApplicationShutdown, OnModuleInit
-{
+export class KafkaProducer implements OnApplicationShutdown, OnModuleInit {
   private readonly kafka = new Kafka({
     brokers: [process.env.KAFKA_URL],
   });
 
-  private readonly logger = new Logger(KafkaProducerService.name);
+  private readonly logger = new Logger(KafkaProducer.name);
 
   private readonly producer: Producer = this.kafka.producer();
 

@@ -1,5 +1,6 @@
 import { PrismaService } from '@db/service';
-import { KafkaConsumerService, KafkaProducerService } from '@kafka/service';
+import { KafkaConsumer } from '@kafka/consumer';
+import { KafkaProducer } from '@kafka/producer';
 import { Module } from '@nestjs/common';
 import { CancelPurchaseService, PurchaseService } from './service';
 
@@ -7,8 +8,8 @@ import { CancelPurchaseService, PurchaseService } from './service';
   providers: [
     CancelPurchaseService,
     PurchaseService,
-    KafkaConsumerService,
-    KafkaProducerService,
+    KafkaConsumer,
+    KafkaProducer,
     PrismaService,
   ],
   exports: [CancelPurchaseService, PurchaseService],

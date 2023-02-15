@@ -83,10 +83,11 @@
     },
     "collectCoverageFrom": [
       "**/*.ts",
-      "!**/*.(error|dto|enum|module|d).ts",
+      "!**/*.(d|error|dto|enum|module).ts",
       "!**/index.ts",
       "!**/main.ts",
-      "!**/prisma.service.ts"
+      "!**/prisma.service.ts",
+      "!**/*.(consumer|listener|producer).ts"
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"

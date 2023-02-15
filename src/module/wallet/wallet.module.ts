@@ -8,7 +8,8 @@ import {
   WithdrawalService,
   DepositService,
 } from './service';
-import { KafkaConsumerService, KafkaProducerService } from '@kafka/service';
+import { KafkaConsumer } from '@kafka/consumer';
+import { KafkaProducer } from '@kafka/producer';
 import { CancelPurchaseService, PurchaseService } from '@purchase/service';
 
 @Module({
@@ -18,8 +19,8 @@ import { CancelPurchaseService, PurchaseService } from '@purchase/service';
     GetWalletBalanceByWalletIdService,
     CreateWalletService,
     GetWalletStatementByWalletIdService,
-    KafkaConsumerService,
-    KafkaProducerService,
+    KafkaConsumer,
+    KafkaProducer,
     DepositService,
     WithdrawalService,
     PurchaseService,
