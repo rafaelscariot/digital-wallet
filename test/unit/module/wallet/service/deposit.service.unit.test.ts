@@ -1,7 +1,7 @@
 import { suite, test } from '@testdeck/jest';
 import { DepositService } from '@wallet/service';
 import { PrismaService } from '@db/service';
-import { KafkaProducerService } from '@kafka/service';
+import { KafkaProducer } from '@kafka/producer';
 import { TopicEnum } from '@shared/enum';
 
 @suite('[Wallet Module] Deposit Service Unit Test')
@@ -11,9 +11,9 @@ class DepositServiceUnitTest {
   private kafkaProducerMock: jest.SpyInstance;
 
   async before() {
-    const kafkaProducerService = new KafkaProducerService();
+    const kafkaProducer = new KafkaProducer();
     this.kafkaProducerMock = jest
-      .spyOn(kafkaProducerService, 'produce')
+      .spyOn(kafkaProducer, 'produce')
       .mockResolvedValue();
 
     this.prismaServiceMock = {
@@ -40,7 +40,7 @@ class DepositServiceUnitTest {
 
     this.depositService = new DepositService(
       this.prismaServiceMock,
-      kafkaProducerService,
+      kafkaProducer,
     );
   }
 

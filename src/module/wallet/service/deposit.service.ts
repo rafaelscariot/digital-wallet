@@ -1,13 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '@db/service';
-import { KafkaProducerService } from '@kafka/service';
+import { KafkaProducer } from '@kafka/producer';
 import { TopicEnum } from '@shared/enum';
 
 @Injectable()
 export class DepositService {
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly kafkaProducerService: KafkaProducerService,
+    private readonly kafkaProducer: KafkaProducer,
   ) {}
 
   private readonly logger = new Logger(DepositService.name);
@@ -44,7 +44,7 @@ export class DepositService {
     } catch (error) {
       this.logger.error(error);
 
-      await this.kafkaProducerService.produce({
+      await this.kafkaProducer.produce({
         topic: TopicEnum.ERROR,
         messages: [
           {

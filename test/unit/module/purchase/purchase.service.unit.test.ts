@@ -1,12 +1,12 @@
 import { suite, test } from '@testdeck/jest';
-import { WithdrawalService } from '@wallet/service';
 import { PrismaService } from '@db/service';
 import { KafkaProducer } from '@kafka/producer';
 import { TopicEnum } from '@shared/enum';
+import { PurchaseService } from '@purchase/service';
 
-@suite('[Wallet Module] Withdrawal Service Unit Test')
-class WithdrawalServiceUnitTest {
-  private withdrawalService: WithdrawalService;
+@suite('[Wallet Module] Purchase Service Unit Test')
+class PurchaseServiceUnitTest {
+  private purchaseService: PurchaseService;
   private prismaServiceMock: PrismaService;
   private kafkaProducerMock: jest.SpyInstance;
 
@@ -17,6 +17,17 @@ class WithdrawalServiceUnitTest {
       .mockResolvedValue();
 
     this.prismaServiceMock = {
+      purchase: {
+        create: ({ data: { walletId, amount } }) => {
+          return {
+            walletId,
+            purchaseId: 1,
+            amount,
+            canceled: false,
+            createdAt: new Date('Jul 12 2011'),
+          };
+        },
+      },
       walletStatement: {
         create: ({ data: { walletId, withdrawal } }) => {
           return {
@@ -38,27 +49,27 @@ class WithdrawalServiceUnitTest {
       $transaction: (operations: []) => {},
     } as unknown as PrismaService;
 
-    this.withdrawalService = new WithdrawalService(
+    this.purchaseService = new PurchaseService(
       this.prismaServiceMock,
       kafkaProducer,
     );
   }
 
   @test
-  async 'Given a withdrawal amount greater than the amount held in the wallet, should return an error'() {
+  async 'Given a purchase with an amount greater than the available balance, should return an error'() {
     const payload = JSON.stringify({
       walletId: 1,
       amount: 15,
     });
 
-    await this.withdrawalService.perform(payload);
+    await this.purchaseService.perform(payload);
 
     expect(this.kafkaProducerMock).toHaveBeenCalledWith({
       topic: TopicEnum.ERROR,
       messages: [
         {
           value: {
-            topic: TopicEnum.WITHDRAWAL,
+            topic: TopicEnum.PURCHASE,
             payload,
             error: Error('Invalid amount'),
           }.toString(),
@@ -71,14 +82,14 @@ class WithdrawalServiceUnitTest {
   async 'Given an invalid payload, should produce an error'() {
     const payload = JSON.stringify({ atr: 1 });
 
-    await this.withdrawalService.perform(payload);
+    await this.purchaseService.perform(payload);
 
     expect(this.kafkaProducerMock).toHaveBeenCalledWith({
       topic: TopicEnum.ERROR,
       messages: [
         {
           value: {
-            topic: TopicEnum.WITHDRAWAL,
+            topic: TopicEnum.PURCHASE,
             payload,
             error: Error('Payload missing attributes'),
           }.toString(),
@@ -98,14 +109,14 @@ class WithdrawalServiceUnitTest {
       return null;
     };
 
-    await this.withdrawalService.perform(payload);
+    await this.purchaseService.perform(payload);
 
     expect(this.kafkaProducerMock).toHaveBeenCalledWith({
       topic: TopicEnum.ERROR,
       messages: [
         {
           value: {
-            topic: TopicEnum.WITHDRAWAL,
+            topic: TopicEnum.PURCHASE,
             payload,
             error: Error(`Wallet ${JSON.parse(payload).walletId} not found`),
           }.toString(),

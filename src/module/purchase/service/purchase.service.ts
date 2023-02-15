@@ -1,13 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '@db/service';
-import { KafkaProducerService } from '@kafka/service';
+import { KafkaProducer } from '@kafka/producer';
 import { TopicEnum } from '@shared/enum';
 
 @Injectable()
 export class PurchaseService {
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly kafkaProducerService: KafkaProducerService,
+    private readonly kafkaProducer: KafkaProducer,
   ) {}
 
   private readonly logger = new Logger(PurchaseService.name);
@@ -16,7 +16,9 @@ export class PurchaseService {
     try {
       const { walletId, amount } = await this.parsePayload(payload);
 
-      this.logger.log(`Purchase of ${amount.toFixed(2)} in the wallet ${walletId}`);
+      this.logger.log(
+        `Purchase of ${amount.toFixed(2)} in the wallet ${walletId}`,
+      );
 
       const wallet = await this.prismaService.wallet.findUnique({
         where: { id: walletId },
@@ -51,8 +53,8 @@ export class PurchaseService {
     } catch (error) {
       this.logger.error(error);
 
-      await this.kafkaProducerService.produce({
-        topic: 'error',
+      await this.kafkaProducer.produce({
+        topic: TopicEnum.ERROR,
         messages: [
           {
             value: {

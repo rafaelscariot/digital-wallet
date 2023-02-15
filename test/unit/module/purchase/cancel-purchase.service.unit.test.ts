@@ -1,14 +1,13 @@
 import { suite, test } from '@testdeck/jest';
-import { WithdrawalService } from '@wallet/service';
-import { PrismaService } from '@db/service';
 import { KafkaProducer } from '@kafka/producer';
 import { TopicEnum } from '@shared/enum';
+import { CancelPurchaseService } from '@purchase/service';
 
-@suite('[Wallet Module] Withdrawal Service Unit Test')
-class WithdrawalServiceUnitTest {
-  private withdrawalService: WithdrawalService;
-  private prismaServiceMock: PrismaService;
+@suite('[Wallet Module] Cancel Purchase Service Unit Test')
+class CancelPurchaseServiceUnitTest {
+  private cancelPurchaseService: CancelPurchaseService;
   private kafkaProducerMock: jest.SpyInstance;
+  private prismaServiceMock;
 
   async before() {
     const kafkaProducer = new KafkaProducer();
@@ -17,16 +16,24 @@ class WithdrawalServiceUnitTest {
       .mockResolvedValue();
 
     this.prismaServiceMock = {
+      purchase: {
+        create: ({ data: { walletId, amount } }) => {
+          return {};
+        },
+        findUnique: ({ where: { id } }) => {
+          return {
+            walletId: 1,
+            purchaseId: id,
+            amount: 10,
+            canceled: false,
+            createdAt: new Date('Jul 12 2011'),
+          };
+        },
+        update: ({ where: { id }, data: { canceled } }) => {},
+      },
       walletStatement: {
         create: ({ data: { walletId, withdrawal } }) => {
-          return {
-            walletId,
-            deposit: null,
-            amount: 10,
-            createdAt: new Date('Jul 12 2011'),
-            withdrawal,
-            reversal: null,
-          };
+          return {};
         },
       },
       wallet: {
@@ -36,31 +43,36 @@ class WithdrawalServiceUnitTest {
         update: ({ data: { amount }, where: { id } }) => {},
       },
       $transaction: (operations: []) => {},
-    } as unknown as PrismaService;
+    };
 
-    this.withdrawalService = new WithdrawalService(
+    this.cancelPurchaseService = new CancelPurchaseService(
       this.prismaServiceMock,
       kafkaProducer,
     );
   }
 
   @test
-  async 'Given a withdrawal amount greater than the amount held in the wallet, should return an error'() {
+  async 'Given a purchase already canceled, should produce an error'() {
     const payload = JSON.stringify({
-      walletId: 1,
-      amount: 15,
+      purchaseId: 1,
     });
 
-    await this.withdrawalService.perform(payload);
+    this.prismaServiceMock.purchase.findUnique = ({ where: { id } }) => {
+      return { canceled: true };
+    };
+
+    await this.cancelPurchaseService.perform(payload);
 
     expect(this.kafkaProducerMock).toHaveBeenCalledWith({
       topic: TopicEnum.ERROR,
       messages: [
         {
           value: {
-            topic: TopicEnum.WITHDRAWAL,
+            topic: TopicEnum.CANCELLATION,
             payload,
-            error: Error('Invalid amount'),
+            error: Error(
+              `Purchase ${JSON.parse(payload).purchaseId} already canceled`,
+            ),
           }.toString(),
         },
       ],
@@ -71,14 +83,14 @@ class WithdrawalServiceUnitTest {
   async 'Given an invalid payload, should produce an error'() {
     const payload = JSON.stringify({ atr: 1 });
 
-    await this.withdrawalService.perform(payload);
+    await this.cancelPurchaseService.perform(payload);
 
     expect(this.kafkaProducerMock).toHaveBeenCalledWith({
       topic: TopicEnum.ERROR,
       messages: [
         {
           value: {
-            topic: TopicEnum.WITHDRAWAL,
+            topic: TopicEnum.CANCELLATION,
             payload,
             error: Error('Payload missing attributes'),
           }.toString(),
@@ -88,24 +100,23 @@ class WithdrawalServiceUnitTest {
   }
 
   @test
-  async 'Given an invalid walletId, should produce an error'() {
+  async 'Given an invalid purchase id, should produce an error'() {
     const payload = JSON.stringify({
-      walletId: 1,
-      amount: 10,
+      purchaseId: 1,
     });
 
-    this.prismaServiceMock.wallet.findUnique = ({ where: { id } }) => {
+    this.prismaServiceMock.purchase.findUnique = ({ where: { id } }) => {
       return null;
     };
 
-    await this.withdrawalService.perform(payload);
+    await this.cancelPurchaseService.perform(payload);
 
     expect(this.kafkaProducerMock).toHaveBeenCalledWith({
       topic: TopicEnum.ERROR,
       messages: [
         {
           value: {
-            topic: TopicEnum.WITHDRAWAL,
+            topic: TopicEnum.CANCELLATION,
             payload,
             error: Error(`Wallet ${JSON.parse(payload).walletId} not found`),
           }.toString(),
