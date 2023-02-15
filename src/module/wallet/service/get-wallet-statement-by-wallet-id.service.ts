@@ -14,11 +14,11 @@ export class GetWalletStatementByWalletIdService {
   async perform(walletId: number): Promise<GetWalletStatementByWalletIdDTO> {
     this.logger.log(`Getting wallet statements for the wallet ${walletId}`);
 
-    const { amount } = await this.prismaService.wallet.findUnique({
+    const wallet = await this.prismaService.wallet.findUnique({
       where: { id: walletId },
     });
 
-    if (!amount) {
+    if (!wallet) {
       throw WalletError.NOT_FOUND(`wallet_${walletId}`);
     }
 
@@ -27,6 +27,6 @@ export class GetWalletStatementByWalletIdService {
       orderBy: { createdAt: 'asc' },
     });
 
-    return { amount, movements: walletStatements };
+    return { amount: wallet.amount, movements: walletStatements };
   }
 }

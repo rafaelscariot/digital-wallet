@@ -14,7 +14,10 @@ export class KafkaConsumerService implements OnApplicationShutdown {
 
   private readonly consumers: Consumer[] = [];
 
-  async consume(topic: ConsumerSubscribeTopics, config: ConsumerRunConfig) {
+  async consume(
+    topic: ConsumerSubscribeTopics,
+    config: ConsumerRunConfig,
+  ): Promise<void> {
     const consumer = this.kafka.consumer({ groupId: 'digital-wallet' });
     await consumer.connect();
     await consumer.subscribe(topic);
@@ -22,7 +25,7 @@ export class KafkaConsumerService implements OnApplicationShutdown {
     this.consumers.push(consumer);
   }
 
-  async onApplicationShutdown() {
+  async onApplicationShutdown(): Promise<void> {
     for (const consumer of this.consumers) {
       await consumer.disconnect();
     }

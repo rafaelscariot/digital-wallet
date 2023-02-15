@@ -49,7 +49,7 @@ export class CancelPurchaseService {
       const createWalletStatement = this.prismaService.walletStatement.create({
         data: {
           walletId: purchaseWallet.id,
-          reversal: purchaseWallet.amount,
+          reversal: purchase.amount,
         },
       });
 
@@ -66,7 +66,7 @@ export class CancelPurchaseService {
         messages: [
           {
             value: {
-              topic: TopicEnum.DEPOSIT,
+              topic: TopicEnum.CANCELLATION,
               payload,
               error: error,
             }.toString(),

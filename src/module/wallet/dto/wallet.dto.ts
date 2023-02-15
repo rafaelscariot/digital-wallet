@@ -33,6 +33,10 @@ class WalletStatementMovementsDTO {
   @ApiProperty({ type: Number })
   deposit?: Decimal;
 
+  @IsDecimal()
+  @ApiProperty({ type: Number })
+  reversal?: Decimal;
+
   @IsDate()
   @ApiProperty()
   createdAt: Date;
