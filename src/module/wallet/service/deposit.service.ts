@@ -16,7 +16,9 @@ export class DepositService {
     try {
       const { walletId, amount } = await this.parsePayload(payload);
 
-      this.logger.log(`Depositing amount ${amount} in the wallet ${walletId}`);
+      this.logger.log(
+        `Depositing amount ${amount.toFixed(2)} in the wallet ${walletId}`,
+      );
 
       const wallet = await this.prismaService.wallet.findUnique({
         where: { id: walletId },
@@ -35,12 +37,15 @@ export class DepositService {
         data: { walletId, deposit: amount },
       });
 
-      await this.prismaService.$transaction([updateWallet, createWalletStatement]);
+      await this.prismaService.$transaction([
+        updateWallet,
+        createWalletStatement,
+      ]);
     } catch (error) {
       this.logger.error(error);
 
       await this.kafkaProducerService.produce({
-        topic: 'error',
+        topic: TopicEnum.ERROR,
         messages: [
           {
             value: {

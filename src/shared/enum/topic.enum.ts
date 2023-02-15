@@ -3,4 +3,5 @@ export enum TopicEnum {
   WITHDRAWAL = 'withdrawal',
   PURCHASE = 'purchase',
   CANCELLATION = 'cancellation',
+  ERROR = 'error',
 }

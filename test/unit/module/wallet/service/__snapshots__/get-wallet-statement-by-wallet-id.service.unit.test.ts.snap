@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`[Wallet Module] Get Wallet Statement By Wallet Id Service Unit Test Given a valid wallet id, should return the respective statements 1`] = `
+{
+  "amount": 10,
+  "movements": {
+    "amount": 10,
+    "movements": [
+      {
+        "createdAt": 2011-07-12T03:00:00.000Z,
+        "deposit": 10,
+        "reversal": null,
+        "walletId": 1,
+        "withdrawal": null,
+      },
+    ],
+  },
+}
+`;

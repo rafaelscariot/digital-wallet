@@ -16,7 +16,7 @@ export class PurchaseService {
     try {
       const { walletId, amount } = await this.parsePayload(payload);
 
-      this.logger.log(`Purchase of ${amount} in the wallet ${walletId}`);
+      this.logger.log(`Purchase of ${amount.toFixed(2)} in the wallet ${walletId}`);
 
       const wallet = await this.prismaService.wallet.findUnique({
         where: { id: walletId },
@@ -56,7 +56,7 @@ export class PurchaseService {
         messages: [
           {
             value: {
-              topic: TopicEnum.DEPOSIT,
+              topic: TopicEnum.PURCHASE,
               payload,
               error: error,
             }.toString(),
