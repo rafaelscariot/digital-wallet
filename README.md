@@ -6,7 +6,7 @@
 
 <img src="https://github.com/rafaelscariot/digital-wallet/blob/dev/docs/digital-wallet-architecture.png" />
 
-## 🚀 Installation
+## Installation
 
 ```bash
 # project dependencies
@@ -19,13 +19,13 @@ $ docker-compose up -d
 $ yarn db:create
 ```
 
-## ☕ Running the app
+## Running the app
 
 ```bash
 $ yarn start:dev
 ```
 
-## 🧪 Tests
+## Tests
 
 ```bash
 $ yarn test
